@@ -1,0 +1,31 @@
+name: Overwrite Main Branch
+
+on:
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+
+jobs:
+  swap-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Overwrite main with patch branch
+        run: |
+          # Fetch all branches
+          git fetch origin
+
+          # Checkout main and reset it to match ncas2427sz1147-ux-patch-2026
+          git checkout main
+          git reset --hard origin/ncas2427sz1147-ux-patch-2026
+
+          # Force push to main
+          git push origin main --force
